@@ -1,0 +1,45 @@
+Kochi: On January 13, Union environment minister Bhupendra Yadav released India’s 17th ‘State of Forest’ report. Prepared by the Forest Survey of India (FSI), the report said the country’s forest and tree cover had increased over the last two years by 2,261 sq. km.
+More forest cover means more trees, and more trees mean more carbon sequestration. Specifically, the 2021 report has reported an increase of 79.4 million tonnes of carbon since the last assessment. So this is a welcome finding for policymakers and politicians involved in India’s international climate action negotiations.
+Reassuring as this may be, however, it isn’t the whole picture. Previous editions of the same report have elicited criticism from independent experts for their methods, and this time is no different.
+Based on conversations with experts, The Wire Science was able to identify four particular problems: definitions, unverifiable data, trees in tiger habitats and forests in the northeast.
+More importantly, this means there are doubts about whether India’s forest cover has really increased and, by extrapolation, whether the Indian government could be using a flawed report to shore up its progress on climate commitments.
+The FSI studied India’s forest and tree cover using remote-sensing data. Its members analysed satellite images and differentiated between vegetated and non-vegetated areas using a measure called the normalised difference vegetation index. These two areas reflect different amounts of light in satellite images, and the index value captures this difference.
+Using an algorithm, FSI researchers categorised the vegetated area into different ‘classes’ based on the brightness of each pixel: ‘very dense’ forest, ‘moderately dense’ forest and ‘open forest’.
+‘Very dense’ forests have a canopy density – the fraction covered by the crowns of trees – greater than 70%. But FSI has used no clear relationship or ancillary field dataset to arrive at this threshold, Srinivasan V., a senior fellow at the Foundation for Ecological Research, Advocacy and Learning, Puducherry, said.
+Another similar problem lies with the FSI’s definition of ‘forest cover’. According to the body, all tree patches that have a canopy density of more than 10% and are larger than one hectare, irrespective of their legal status, are considered forests, according to Srinivasan.
+This means plantations and monocultures, such as those of coffee and timber, also contribute to this area. Indeed, for example, a map of Tamil Nadu in the report showed areas in Kanyakumari district populated with coconut and rubber plantations but labelled them ‘forests’, Raj Bhagat Palanichamy, an expert on using remote-sensing data, tweeted on January 13.
+“By this logic, wooded parks within cities with exotics greater than one hectare should be considered as a ‘forest patch’,” Srinivasan said. “I would say this is major green-washing and an attempt to show we have 33% tree cover.”
+The 33% is a reference to the National Green India Mission, one of eight missions under India’s National Action Plan on Climate Change. Under the mission, the national government hopes to bring a third of its land area under forest cover in a decade or so.
+For these reasons, Srinivasan said, the report should be called the “India State of Trees Report”, because the use of the word “forest” could be misleading.
+Next, scientists have noted that the forest cover data the FSI used is not in the public domain, which means there is no way to verify its claim that India’s forest cover has increased.
+“If the data were actually made freely downloadable, all the ongoing kite-flying about increasing forest cover could end somewhat awkwardly,” researcher M.D. Madhusudan had tweeted in 2019. “As it stands now, the … reports are a series of unverifiable claims, somewhat reminiscent of our tiger numbers from the pugmark era.”
+In fact, in December 2021, Madhusudan wrote that the results of the FSI’s reports were at odds with figures supplied by the National Remote Sensing Centre (NRSC). Between 1995-1996 and 2011-2013, the FSI reported a sharp increase of forest cover, to the tune of 6 million hectare, but a 2015 NRSC-led study reported a gradual decline.
+“This discrepancy between FSI and NRSC … estimates of India’s forest cover has a long history. In the very first ‘State of Forest’ report in 1987, the [latter’s] estimate of India’s forest cover was nearly 30% lower than the FSI’s estimate.”
+The new report has some firsts. For example, it assessed the forest cover in tiger reserves and corridors, and found that the total cover in 32 tiger reserves was 55,666 sq. km and in tiger corridors, 11,575 sq. km.
+If this sounds notable, it may not be: according to Srinivasan, there is no value in knowing the forest cover in tiger reserves, more so since the report doesn’t ascribe any ecological relevance to this information.
+Just like ‘forests’, tiger reserves are also well-vegetated, and include evergreen forests with grasslands, dry deciduous forests, mangroves, alluvial grasslands, etc.
+“Evergreens support low densities [of tigers] and alluvial grasslands and deciduous forests support the highest densities,” Srinivasan explained. “Should the tree cover increase or decrease to support tiger numbers? Are they suggesting that we green up drier habitats or brown up wetter habitats?”
+According to the report, the total forest cover in India’s biodiversity-rich northeastern states has reportedly dropped by 1,020 sq. km. And the states that reported the five biggest drops in forest cover are all here: Arunachal Pradesh, Manipur, Nagaland, Mizoram and Meghalaya (in that order).
+In 2020, Kaustubh Deka, a teacher of political science, wrote for The Wire about how the Indian government has been appropriating resources in the country’s northeast in the name of ‘national interest’ while at the same time ‘peripharilising’ the northeastern states.
+Kanchi Kohli, an environmental policy expert and senior researcher at the Centre for Policy Research, New Delhi, said, “The Central government’s ‘Look East’ and other policies directed at infrastructure expansion in the northeast can be understood to be one of the significant factors contributing to the loss of area under forest.”
+In this context, the northeast’s greater biodiversity matters if only because losing forests in a biodiverse region and having them replaced in another place by forests that are really monoculture plantations is not a gain. But the report doesn’t discuss this aspect.
+This said, the decline in forest cover in India’s northeast, and in the tribal districts, is the only ‘bad news’ in the report. Most of its focus is on how forest cover has increased across the country.
+After the previous edition of the report came out, Kohli and her colleague Manju Menon wrote for The Wire Science that the report’s main function is “to deliver positive news that can make the Centre and its policies look good”.
+That’s because its data – including increase in forest cover and total carbon stock – will be an important part of India’s claim that it is fulfilling its international climate targets. According to the government’s nationally determined contributions under the Paris Agreement, India has pledged to create carbon sinks equivalent to 2.5-3 billion tonnes of carbon dioxide by increasing its forest and tree cover by 2030.
+In fact, the ‘State of Forest’ report is designed to calculate the forest cover to indicate efforts and extent of compliance with domestic forest policy and international climate targets, Kohli told The Wire Science.
+“It is not a reflection of ecological or social quality of forests,” she explained. “There are longstanding questions that have been raised on the increased reliance on satellite imagery to determine the status of forests.”
+This does not give a sense of life of the land which is being numbered, especially when it comes to biodiversity, ecological functions and livelihood uses.”
+Your email address will not be published. Required fields are marked *
+ 
+
+
+SUPPORT OUR WORK
+From girls’ education in Afghanistan to broken water systems in Appalachia, your support makes possible stories that might otherwise go untold. Getting to the truth matters now more than ever. Will you give today?
+MAKE A DONATION 
+
+Report for America has created more than 600 local reporting positions with more than 300 news organizations across all 50 states, Puerto Rico, Guam and Washington, D.C. since 2017. Each is focused on a critical coverage gap within their local community, with an emphasis on impact and sustainability. LEARN MORE
+
+Report for the World, launched in 2021, now partners with more than 30 independent news organizations supporting 45 reporting positions in 20 countries — these reporters cover critical public interest beats like climate, education, health, gender and criminal justice. LEARN MORE
+© 2024  The GroundTruth Project
+Website by Web
+								Publisher PRO

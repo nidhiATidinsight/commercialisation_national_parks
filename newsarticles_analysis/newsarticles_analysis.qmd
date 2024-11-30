@@ -1,0 +1,600 @@
+---
+title: "Untitled"
+format: html
+---
+
+```{python}
+from bs4 import BeautifulSoup
+import requests
+import spacy
+from spacytextblob.spacytextblob import SpacyTextBlob
+```
+
+Scraping article 1
+
+```{python}
+article_1_url = "https://thegroundtruthproject.org/indias-new-state-of-forest-report-is-not-really-about-forests/"
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+}
+
+response = requests.get(article_1_url, headers=headers)
+```
+
+```{python}
+soup = BeautifulSoup(response.text, "html.parser")
+paragraphs = soup.find_all("p")
+```
+
+As we can see we get the entire text, so, now we can combine it together. 
+
+```{python}
+article_1_text = "\n".join([p.get_text() for p in paragraphs])
+```
+
+Saving this file 
+
+```{python}
+with open("article_1.txt", "w", encoding="utf-8") as file:
+    file.write(article_1_text)
+```
+
+We can now try to do a polarity analysis on this article. 
+
+```{python}
+nlp = spacy.load("en_core_web_sm")
+nlp.add_pipe("spacytextblob")
+
+
+doc_article_1 = nlp(article_1_text)
+```
+
+
+```{python}
+article_1_sentence_polarities = []
+
+for i, sentence in enumerate(doc_article_1.sents):
+    polarity = sentence._.blob.polarity
+    article_1_sentence_polarities.append({"n": i + 1, "article_1_polarity": polarity})
+
+print(f"Article 1 Polarity: {doc_article_1._.blob.polarity:.2f}")
+```
+
+As it can be seen, the polarity is only a little over neutral.
+
+Trying this for article 2.
+
+Scraping article 2
+
+```{python}
+article_2_url = "https://climatechangenews.com/2022/02/14/india-falsely-claims-forestry-progress-skewed-report-experts-warn/"
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+}
+
+response_2 = requests.get(article_2_url, headers=headers)
+```
+
+```{python}
+soup = BeautifulSoup(response_2.text, "html.parser")
+paragraphs_2 = soup.find_all("p")
+```
+
+As we can see we get the entire text, so, now we can combine it together. 
+
+```{python}
+article_2_text = "\n".join([p.get_text() for p in paragraphs_2])
+```
+
+Saving this file 
+
+```{python}
+with open("article_2.txt", "w", encoding="utf-8") as file:
+    file.write(article_1_text)
+```
+
+We can now try to do a polarity analysis on this article. 
+
+```{python}
+doc_article_2 = nlp(article_2_text)
+```
+
+```{python}
+article_2_sentence_polarities = []
+
+for i, sentence in enumerate(doc_article_2.sents):
+    polarity = sentence._.blob.polarity
+    article_2_sentence_polarities.append({"n": i + 1, "article_2_polarity": polarity})
+
+print(f"Article 2 Polarity: {doc_article_2._.blob.polarity:.2f}")
+```
+
+Once again, it can be seen, it is at best neutral. 
+
+Trying this for article 3.
+
+Scraping article 3
+
+```{python}
+article_3_url = "https://india.mongabay.com/2018/05/reports-say-forest-cover-decreasing-contrary-to-government-claims/#:~:text=Multiple%20research%20reports%20find%20decrease,included%20in%20the%20forest%20survey."
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+}
+
+response_3 = requests.get(article_3_url, headers=headers)
+```
+
+```{python}
+soup = BeautifulSoup(response_3.text, "html.parser")
+paragraphs_3 = soup.find_all("p")
+```
+
+As we can see we get the entire text, so, now we can combine it together. 
+
+```{python}
+article_3_text = "\n".join([p.get_text() for p in paragraphs_3])
+```
+
+Saving this file 
+
+```{python}
+with open("article_3.txt", "w", encoding="utf-8") as file:
+    file.write(article_3_text)
+```
+
+We can now try to do a polarity analysis on this article. 
+
+```{python}
+doc_article_3 = nlp(article_3_text)
+```
+
+```{python}
+article_3_sentence_polarities = []
+
+for i, sentence in enumerate(doc_article_3.sents):
+    polarity = sentence._.blob.polarity
+    article_3_sentence_polarities.append({"n": i + 1, "article_3_polarity": polarity})
+
+print(f"Article 3 Polarity: {doc_article_3._.blob.polarity:.2f}")
+```
+
+Trying this for another article
+
+Scraping article 4
+
+```{python}
+article_4_url = "https://www.downtoearth.org.in/forests/india-identifying-defining-forests-wrongly-say-experts-at-anil-agarwal-dialogue-81801"
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+}
+
+response_4 = requests.get(article_4_url, headers=headers)
+```
+
+```{python}
+soup = BeautifulSoup(response_4.text, "html.parser")
+paragraphs_4 = soup.find_all("p")
+```
+
+As we can see we get the entire text, so, now we can combine it together. 
+
+```{python}
+article_4_text = "\n".join([p.get_text() for p in paragraphs_4])
+```
+
+Saving this file 
+
+```{python}
+with open("article_4.txt", "w", encoding="utf-8") as file:
+    file.write(article_4_text)
+```
+
+We can now try to do a polarity analysis on this article. 
+
+```{python}
+doc_article_4 = nlp(article_4_text)
+```
+
+```{python}
+article_4_sentence_polarities = []
+
+for i, sentence in enumerate(doc_article_4.sents):
+    polarity = sentence._.blob.polarity
+    article_4_sentence_polarities.append({"n": i + 1, "article_4_polarity": polarity})
+
+print(f"Article 4 Polarity: {doc_article_4._.blob.polarity:.2f}")
+```
+
+As can be seen, the article is clearly negative. 
+
+Trying this for another article
+
+Scraping article 5
+
+```{python}
+article_5_url = "https://www.conservationindia.org/articles/indias-fake-forests"
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+}
+
+response_5 = requests.get(article_5_url, headers=headers)
+```
+
+```{python}
+soup = BeautifulSoup(response_5.text, "html.parser")
+paragraphs_5 = soup.find_all("p")
+```
+
+As we can see we get the entire text, so, now we can combine it together. 
+
+```{python}
+article_5_text = "\n".join([p.get_text() for p in paragraphs_5])
+```
+
+Saving this file 
+
+```{python}
+with open("article_5.txt", "w", encoding="utf-8") as file:
+    file.write(article_5_text)
+```
+
+We can now try to do a polarity analysis on this article. 
+
+```{python}
+doc_article_5 = nlp(article_5_text)
+```
+
+```{python}
+article_5_sentence_polarities = []
+
+for i, sentence in enumerate(doc_article_5.sents):
+    polarity = sentence._.blob.polarity
+    article_5_sentence_polarities.append({"n": i + 1, "article_5_polarity": polarity})
+
+print(f"Article 5 Polarity: {doc_article_5._.blob.polarity:.2f}")
+```
+
+As can be seen, the article is at best neutral. 
+
+Trying this for another article
+
+Scraping article 6
+
+```{python}
+article_6_url = "https://www.newsclick.in/environment-india-identifying-defining-forests-wrongly-experts"
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+}
+
+response_6 = requests.get(article_6_url, headers=headers)
+```
+
+```{python}
+soup = BeautifulSoup(response_6.text, "html.parser")
+paragraphs_6 = soup.find_all("p")
+```
+
+As we can see we get the entire text, so, now we can combine it together. 
+
+```{python}
+article_6_text = "\n".join([p.get_text() for p in paragraphs_6])
+```
+
+Saving this file 
+
+```{python}
+with open("article_6.txt", "w", encoding="utf-8") as file:
+    file.write(article_6_text)
+```
+
+We can now try to do a polarity analysis on this article. 
+
+```{python}
+doc_article_6 = nlp(article_6_text)
+```
+
+```{python}
+article_6_sentence_polarities = []
+
+for i, sentence in enumerate(doc_article_6.sents):
+    polarity = sentence._.blob.polarity
+    article_6_sentence_polarities.append({"n": i + 1, "article_6_polarity": polarity})
+
+print(f"Article 6 Polarity: {doc_article_6._.blob.polarity:.2f}")
+```
+
+As can be seen, the article is exactly neutral. 
+
+Trying this for another article
+
+Scraping article 7
+
+```{python}
+article_7_url = "https://www.downtoearth.org.in/forests/india-state-of-forest-report-delayed-by-a-year-concerns-rise-over-forest-data-integrity"
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+}
+
+response_7 = requests.get(article_7_url, headers=headers)
+```
+
+```{python}
+soup = BeautifulSoup(response_7.text, "html.parser")
+paragraphs_7 = soup.find_all("p")
+```
+
+As we can see we get the entire text, so, now we can combine it together. 
+
+```{python}
+article_7_text = "\n".join([p.get_text() for p in paragraphs_7])
+```
+
+Saving this file 
+
+```{python}
+with open("article_7.txt", "w", encoding="utf-8") as file:
+    file.write(article_7_text)
+```
+
+We can now try to do a polarity analysis on this article. 
+
+```{python}
+doc_article_7 = nlp(article_7_text)
+```
+
+```{python}
+article_7_sentence_polarities = []
+
+for i, sentence in enumerate(doc_article_7.sents):
+    polarity = sentence._.blob.polarity
+    article_7_sentence_polarities.append({"n": i + 1, "article_7_polarity": polarity})
+
+print(f"Article 7 Polarity: {doc_article_7._.blob.polarity:.2f}")
+```
+
+As can be seen, the article is going on the negative side. 
+
+Trying this for another article
+
+Scraping article 8
+
+```{python}
+article_8_url = "https://carboncopy.info/the-unflattering-reality-of-the-lofty-plans-for-indias-forests/"
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+}
+
+response_8 = requests.get(article_8_url, headers=headers)
+```
+
+```{python}
+soup = BeautifulSoup(response_8.text, "html.parser")
+paragraphs_8 = soup.find_all("p")
+```
+
+As we can see we get the entire text, so, now we can combine it together. 
+
+```{python}
+article_8_text = "\n".join([p.get_text() for p in paragraphs_8])
+```
+
+Saving this file 
+
+```{python}
+with open("article_8.txt", "w", encoding="utf-8") as file:
+    file.write(article_8_text)
+```
+
+We can now try to do a polarity analysis on this article. 
+
+```{python}
+doc_article_8 = nlp(article_8_text)
+```
+
+```{python}
+article_8_sentence_polarities = []
+
+for i, sentence in enumerate(doc_article_8.sents):
+    polarity = sentence._.blob.polarity
+    article_8_sentence_polarities.append({"n": i + 1, "article_8_polarity": polarity})
+
+print(f"Article 8 Polarity: {doc_article_8._.blob.polarity:.2f}")
+```
+
+As can be seen the article is at best neutral. 
+
+Trying this for another article
+
+Scraping article 9
+
+```{python}
+article_9_url = "https://india.mongabay.com/2022/01/analysis-indian-forests-around-the-size-of-nagaland-thinned-down-in-two-years/"
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+}
+
+response_9 = requests.get(article_9_url, headers=headers)
+```
+
+```{python}
+soup = BeautifulSoup(response_9.text, "html.parser")
+paragraphs_9 = soup.find_all("p")
+```
+
+As we can see we get the entire text, so, now we can combine it together. 
+
+```{python}
+article_9_text = "\n".join([p.get_text() for p in paragraphs_9])
+```
+
+Saving this file 
+
+```{python}
+with open("article_9.txt", "w", encoding="utf-8") as file:
+    file.write(article_9_text)
+```
+
+We can now try to do a polarity analysis on this article. 
+
+```{python}
+doc_article_9 = nlp(article_9_text)
+```
+
+```{python}
+article_9_sentence_polarities = []
+
+for i, sentence in enumerate(doc_article_9.sents):
+    polarity = sentence._.blob.polarity
+    article_9_sentence_polarities.append({"n": i + 1, "article_9_polarity": polarity})
+
+print(f"Article 9 Polarity: {doc_article_9._.blob.polarity:.2f}")
+```
+
+As can be seen the article is at best neutral. 
+
+Trying this for another article
+
+Scraping article 10
+
+```{python}
+article_10_url = "https://www.scientificamerican.com/article/indias-forest-area-in-doubt/"
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+}
+
+response_10 = requests.get(article_10_url, headers=headers)
+```
+
+```{python}
+soup = BeautifulSoup(response_10.text, "html.parser")
+paragraphs_10 = soup.find_all("p")
+```
+
+As we can see we get the entire text, so, now we can combine it together. 
+
+```{python}
+article_10_text = "\n".join([p.get_text() for p in paragraphs_10])
+```
+
+Saving this file 
+
+```{python}
+with open("article_10.txt", "w", encoding="utf-8") as file:
+    file.write(article_10_text)
+```
+
+We can now try to do a polarity analysis on this article. 
+
+```{python}
+doc_article_10 = nlp(article_10_text)
+```
+
+```{python}
+article_10_sentence_polarities = []
+
+for i, sentence in enumerate(doc_article_10.sents):
+    polarity = sentence._.blob.polarity
+    article_10_sentence_polarities.append({"n": i + 1, "article_10_polarity": polarity})
+
+print(f"Article 10 Polarity: {doc_article_10._.blob.polarity:.2f}")
+```
+
+As can be seen the article is at best neutral. 
+
+Trying this for another article
+
+Scraping article 11
+
+```{python}
+article_11_url = "https://www.theindiaforum.in/environment/swinging-axe-indias-forests"
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+}
+
+response_11 = requests.get(article_11_url, headers=headers)
+```
+
+```{python}
+soup = BeautifulSoup(response_11.text, "html.parser")
+paragraphs_11 = soup.find_all("p")
+```
+
+As we can see we get the entire text, so, now we can combine it together. 
+
+```{python}
+article_11_text = "\n".join([p.get_text() for p in paragraphs_11])
+```
+
+Saving this file 
+
+```{python}
+with open("article_11.txt", "w", encoding="utf-8") as file:
+    file.write(article_11_text)
+```
+
+We can now try to do a polarity analysis on this article. 
+
+```{python}
+doc_article_11 = nlp(article_11_text)
+```
+
+```{python}
+article_11_sentence_polarities = []
+
+for i, sentence in enumerate(doc_article_11.sents):
+    polarity = sentence._.blob.polarity
+    article_11_sentence_polarities.append({"n": i + 1, "article_11_polarity": polarity})
+
+print(f"Article 11 Polarity: {doc_article_11._.blob.polarity:.2f}")
+```
+
+As can be seen the article is at best neutral. 
+
+Trying this for another article
+
+Scraping article 12
+
+```{python}
+article_12_url = "https://timesofindia.indiatimes.com/home/environment/global-warming/govt-claim-on-rise-in-forest-cover-false-study/articleshow/9178245.cms"
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+}
+
+response_12 = requests.get(article_12_url, headers=headers)
+```
+
+```{python}
+soup = BeautifulSoup(response_12.text, "html.parser")
+paragraphs_12 = soup.find_all("p")
+```
+
+As we can see we get the entire text, so, now we can combine it together. 
+
+```{python}
+article_12_text = "\n".join([p.get_text() for p in paragraphs_12])
+```
+
+Saving this file 
+
+```{python}
+with open("article_12.txt", "w", encoding="utf-8") as file:
+    file.write(article_12_text)
+```
+
+We can now try to do a polarity analysis on this article. 
+
+```{python}
+doc_article_12 = nlp(article_12_text)
+```
+
+```{python}
+article_12_sentence_polarities = []
+
+for i, sentence in enumerate(doc_article_12.sents):
+    polarity = sentence._.blob.polarity
+    article_12_sentence_polarities.append({"n": i + 1, "article_12_polarity": polarity})
+
+print(f"Article 12 Polarity: {doc_article_12._.blob.polarity:.2f}")
+```
+
+The article is exactly neutral. 
