@@ -1,0 +1,61 @@
+---
+title: "Untitled"
+format: html
+---
+
+```{python}
+import pandas as pd
+import altair as alt
+import geopandas as gpd
+```
+
+```{python}
+#Importing data
+tourism_data = pd.read_excel("/Users/nidhi/Desktop/Data and Programming Python 2/Final Project/National Park Visit Data.xlsx")
+tourism_data
+```
+
+```{python}
+#National Park Visit Visualisation - First we base a line chart
+
+line_chart_1 = alt.Chart(tourism_data).mark_line(point=True).encode(
+    x=alt.X('Year:O', title='Year'),
+    y=alt.Y('Jim Corbett:Q', title='Number of Visitors in Jim Corbett National Park'),
+    tooltip=['Year', 'Jim Corbett'],  # Add tooltip for interactivity
+    color=alt.value('blue')  # Set a specific color
+).properties(
+    title='Visitor Trends Over Time (Jim Corbett)',
+    width=600,  # Chart width
+    height=400  # Chart height
+)
+
+line_chart_1.show()
+
+
+line_chart_1 = alt.Chart(tourism_data).mark_line(point=True).encode(
+    x=alt.X('Year:O', title='Year'),
+    y=alt.Y('Jim Corbett:Q', title='Number of Visitors in Jim Corbett National Park'),
+    tooltip=['Year', 'Jim Corbett'],  # Add tooltip for interactivity
+    color=alt.value('blue')  # Set a specific color
+).properties(
+    title='Visitor Trends Over Time (Jim Corbett)',
+    width=600,  # Chart width
+    height=400  # Chart height
+)
+
+line_chart_1.show()
+
+line_chart_2 = alt.Chart(tourism_data).mark_line(point=True).encode(
+    x=alt.X('Year:O', title='Year'),
+    y=alt.Y('Pench National Park:Q', title='Number of Visitors in Jim Corbett National Park'),
+    tooltip=['Year', 'Pench National Park'],  # Add tooltip for interactivity
+    color=alt.value('blue')  # Set a specific color
+).properties(
+    title='Visitor Trends Over Time (Pench NAational Park)',
+    width=600,  # Chart width
+    height=400  # Chart height
+)
+
+line_chart_2.show()
+
+```
