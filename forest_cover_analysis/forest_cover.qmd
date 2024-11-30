@@ -1,0 +1,1108 @@
+---
+title: "Untitled"
+format: html
+---
+
+```{python}
+import pandas as pd
+import altair as alt
+import geopandas as gpd
+```
+
+
+```{python}
+# reading the forest cover data for india
+vcf_india = pd.read_csv("/Users/kishikamahajan/Desktop/python2_final_project/shrug-vcf-csv/vcf_shrid.csv")
+vcf_india.head()
+```
+
+The above dataset contains the forest cover from 2001-2020 for each village/town in India. 
+The order goes like this: 
+state -> district -> subdistrict -> village/town
+
+We can first add the location in each row from the shrid id. 
+
+```{python}
+# Loading the shrid location dictionary
+location_shrid = pd.read_csv("/Users/kishikamahajan/Desktop/python2_final_project/shrug-shrid-keys-csv/shrid_loc_names.csv")
+location_shrid.head()
+```
+
+```{python}
+# Merging on the basis of the shrid2 id
+vcf_india_master = pd.merge(vcf_india, location_shrid, on = "shrid2")
+```
+
+Now we can add the spatial characteristics of each entry
+
+```{python}
+# Loading the coordinates' file
+coordinates_shrid = pd.read_csv("/Users/kishikamahajan/Desktop/python2_final_project/shrug-shrid-keys-csv/shrid2_spatial_stats.csv")
+coordinates_shrid.head()
+```
+
+```{python}
+# Merging on the basis of shrid2 id again
+vcf_india_master = pd.merge(vcf_india_master, coordinates_shrid, on = "shrid2")
+vcf_india_master.head()
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+vcf_india_master["geometry"] = vcf_india_master.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+
+```{python}
+# NEED TO DELETE THIS, THIS IS SO THAT IT IS EASIER TO REFER TO THIS FILE
+
+vcf_india_master.to_csv("/Users/kishikamahajan/Desktop/python2_final_project/vcf_india_master.csv", index=False)
+gdf_vcf_india_master = pd.read_csv("/Users/kishikamahajan/Desktop/python2_final_project/vcf_india_master.csv")
+```
+
+Plotting the forest cover
+
+```{python}
+# converting to geodataframe
+gdf_vcf_india_master = gpd.GeoDataFrame(vcf_india_master, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+import matplotlib.pyplot as plt
+
+# 2001 only
+gdf_vcf_india_master_2001 = gdf_vcf_india_master[gdf_vcf_india_master["year"] == 2001]
+```
+
+```{python}
+# plotting 2001 only
+plot_2001 = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_vcf_india_master_2001.plot(
+    column = "vcf_mean",  # Column to base colors on
+    cmap = "Greens",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Forest Cover (vcf_mean) by Region", fontsize = 16)
+ax.axis("off")  # Hide axis for a clean look
+plot_2001
+```
+
+```{python}
+#2010 only
+gdf_vcf_india_master_2010 = gdf_vcf_india_master[gdf_vcf_india_master["year"] == 2010]
+```
+
+```{python}
+# plotting 2010 only
+plot_2010 = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_vcf_india_master_2010.plot(
+    column = "vcf_mean",  # Column to base colors on
+    cmap = "Greens",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Forest Cover (vcf_mean) by Region", fontsize = 16)
+ax.axis("off")  # Hide axis for a clean look
+plot_2010
+```
+
+```{python}
+# 2020 only
+gdf_vcf_india_master_2020 = gdf_vcf_india_master[gdf_vcf_india_master["year"] == 2020]
+```
+
+```{python}
+# plotting 2020 only
+plot_2020 = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_vcf_india_master_2020.plot(
+    column = "vcf_mean",  # Column to base colors on
+    cmap = "Greens",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Forest Cover (vcf_mean) by Region", fontsize = 16)
+ax.axis("off")  # Hide axis for a clean look
+plot_2020
+```
+
+
+```{python}
+# Set up a figure with subplots
+fig, axes = plt.subplots(1, 3, figsize=(18, 6))  # 1 row, 3 columns
+
+# Plot each year on a different subplot
+gdf_vcf_india_master_2001.plot(
+    column='vcf_mean', cmap='Greens', legend=True, ax=axes[0]
+)
+axes[0].set_title("2001")
+
+gdf_vcf_india_master_2010.plot(
+    column='vcf_mean', cmap='Greens', legend=True, ax=axes[1]
+)
+axes[1].set_title("2010")
+
+gdf_vcf_india_master_2020.plot(
+    column='vcf_mean', cmap='Greens', legend=True, ax=axes[2]
+)
+axes[2].set_title("2020")
+
+# Adjust layout for better spacing
+plt.tight_layout()
+
+# Show the combined plot
+plt.show()
+```
+
+
+**WORKING SOLELY ON THE BASIS OF PARTICULAR NATIONAL PARKS**
+
+**FOR THE PURPOSES OF JIM CORBETT NATIONAL PARK**
+```{python}
+# Subsetting only Uttarakhand for the purposes of the Jim Corbett National Park
+
+uttarakhand_id = location_shrid[location_shrid["state_name"] == "uttarakhand"]
+```
+
+As we can see that Uttarakhan starts with 11-05.
+So, we can substitute this from the forest cover data as well. 
+
+```{python}
+forest_cover_uttarakhand = vcf_india[vcf_india["shrid2"].str.startswith("11-05")]
+```
+
+We can add the location in each row from the shrid id. 
+
+```{python}
+# Merging on the basis of the shrid2 id
+vcf_uttarakhand = pd.merge(forest_cover_uttarakhand, uttarakhand_id, on = "shrid2")
+```
+
+Now we can add the spatial characteristics of each entry
+
+```{python}
+# Merging on the basis of shrid2 id again
+vcf_uttarakhand = pd.merge(vcf_uttarakhand, coordinates_shrid, on = "shrid2")
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+vcf_uttarakhand["geometry"] = vcf_uttarakhand.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_vcf_uttarakhand = gpd.GeoDataFrame(vcf_uttarakhand, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+india_state_shapefile = gpd.read_file("/Users/kishikamahajan/Desktop/python2_final_project/india_shapefiles/India_State_Boundary.shp")
+
+# getting only Uttarakhand
+uttarakhand_boundary = india_state_shapefile[india_state_shapefile["State_Name"] == "Uttarakhand"]
+
+uttarakhand_boundary = gpd.GeoDataFrame(uttarakhand_boundary, geometry='geometry')
+
+uttarakhand_boundary = uttarakhand_boundary.to_crs(gdf_vcf_uttarakhand.crs)
+```
+
+```{python}
+import matplotlib.pyplot as plt
+
+# 2001 only
+gdf_vcf_uttarakhand_2001 = gdf_vcf_uttarakhand[gdf_vcf_uttarakhand["year"] == 2001]
+```
+
+```{python}
+# plotting 2001 only
+plot_2001_uttarakhand = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_vcf_uttarakhand_2001.plot(
+    column = "vcf_mean",  # Column to base colors on
+    cmap = "Greens",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Uttarakhand boundary
+uttarakhand_boundary.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 29.548599
+longitude = 78.935303
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Forest Cover (vcf_mean) in Uttarakhand", fontsize = 16)
+ax.axis("off")  
+plot_2001_uttarakhand
+```
+
+```{python}
+#2010 only
+gdf_vcf_uttarakhand_2010 = gdf_vcf_uttarakhand[gdf_vcf_uttarakhand["year"] == 2010]
+```
+
+```{python}
+# plotting 2010 only
+plot_2010_uttarakhand = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_vcf_uttarakhand_2010.plot(
+    column = "vcf_mean",  # Column to base colors on
+    cmap = "Greens",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Uttarakhand boundary
+uttarakhand_boundary.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 29.548599
+longitude = 78.935303
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  
+    color="red",         
+    marker="o",          
+    s=50,                
+    label="Point of Interest" 
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Forest Cover (vcf_mean) in Uttarakhand", fontsize = 16)
+ax.axis("off")  # Hide axis for a clean look
+plot_2010_uttarakhand
+```
+
+```{python}
+# 2020 only
+gdf_vcf_uttarakhand_2020 = gdf_vcf_uttarakhand[gdf_vcf_uttarakhand["year"] == 2020]
+```
+
+```{python}
+# plotting 2020 only
+plot_2020_uttarakhand = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_vcf_uttarakhand_2020.plot(
+    column = "vcf_mean",  # Column to base colors on
+    cmap = "Greens",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Uttarakhand boundary
+uttarakhand_boundary.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 29.548599
+longitude = 78.935303
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Forest Cover (vcf_mean) by Region", fontsize = 16)
+ax.axis("off")  # Hide axis for a clean look
+plot_2020_uttarakhand
+```
+
+
+```{python}
+# Set up a figure with subplots (1 row, 3 columns)
+fig, axes = plt.subplots(1, 3, figsize=(18, 6))  # 1 row, 3 columns
+
+# Plot each year on a different subplot and add the boundary and point to each
+
+# 2001 plot
+gdf_vcf_uttarakhand_2001.plot(
+    column='vcf_mean', cmap='Greens', legend=True, ax=axes[0]
+)
+axes[0].set_title("2001")
+
+# Overlay Uttarakhand boundary and the point for 2001
+uttarakhand_boundary.boundary.plot(ax=axes[0], color="black", linewidth=2)
+axes[0].scatter(longitude, latitude, color="red", marker="o", s=50, label="Jim Corbett National Park")
+axes[0].legend()  # Add a legend
+
+# 2010 plot
+gdf_vcf_uttarakhand_2010.plot(
+    column='vcf_mean', cmap='Greens', legend=True, ax=axes[1]
+)
+axes[1].set_title("2010")
+
+# Overlay Uttarakhand boundary and the point for 2010
+uttarakhand_boundary.boundary.plot(ax=axes[1], color="black", linewidth=2)
+axes[1].scatter(longitude, latitude, color="red", marker="o", s=50, label="Jim Corbett National Park")
+axes[1].legend()  # Add a legend
+
+# 2020 plot
+gdf_vcf_uttarakhand_2020.plot(
+    column='vcf_mean', cmap='Greens', legend=True, ax=axes[2]
+)
+axes[2].set_title("2020")
+
+# Overlay Uttarakhand boundary and the point for 2020
+uttarakhand_boundary.boundary.plot(ax=axes[2], color="black", linewidth=2)
+axes[2].scatter(longitude, latitude, color="red", marker="o", s=50, label="Jim Corbett National Park")
+axes[2].legend()  # Add a legend
+
+# Adjust layout for better spacing
+plt.tight_layout()
+
+# Show the combined plot
+plt.show()
+```
+
+As we can see, our first instinct about commercialisation affecting forest cover is not directly confirmed looking at just the state of Utaarakhand. In fact, it seems that the forest cover in the state has infact increased. 
+
+We can also try to look at the particular district and town in which Jim Corbett is located. 
+
+Jim Corbett is located in the Ramnagar village of the Nainital district of Uttarakhand. 
+
+As a last check, we can try to see the forest cover in the nainital district. 
+
+```{python}
+value_to_check = 'nainital'
+
+# Using `in` operator
+if value_to_check in uttarakhand_id['district_name'].values:
+    print(f"{value_to_check} is present in the 'disrict_name' column.")
+```
+
+```{python}
+nainital_id = uttarakhand_id[uttarakhand_id["district_name"] == "nainital"]
+```
+
+As we can see that Nainital starts with 11-05-066.
+So, we can substitute this from the forest cover data as well. 
+
+```{python}
+forest_cover_uttarakhand_nainital = vcf_india[vcf_india["shrid2"].str.startswith("11-05-066")]
+```
+
+We can add the location in each row from the shrid id. 
+
+```{python}
+# Merging on the basis of the shrid2 id
+vcf_uttarakhand_nainital = pd.merge(forest_cover_uttarakhand_nainital, nainital_id, on = "shrid2")
+```
+
+Now we can add the spatial characteristics of each entry
+
+```{python}
+# Merging on the basis of shrid2 id again
+vcf_uttarakhand_nainital = pd.merge(vcf_uttarakhand_nainital, coordinates_shrid, on = "shrid2")
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+vcf_uttarakhand_nainital["geometry"] = vcf_uttarakhand_nainital.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_vcf_uttarakhand_nainital = gpd.GeoDataFrame(vcf_uttarakhand_nainital, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+district_boundaries = gpd.read_file("/Users/kishikamahajan/Desktop/python2_final_project/india_shapefiles/shrug-pc11dist-poly-shp/district.shp")
+
+# getting only nainital district
+nainital_boundaries = district_boundaries[district_boundaries["pc11_d_id"] == "066"]
+nainital_boundaries = gpd.GeoDataFrame(nainital_boundaries, geometry='geometry')
+nainital_boundaries = nainital_boundaries.to_crs(gdf_vcf_uttarakhand.crs)
+```
+
+```{python}
+import matplotlib.pyplot as plt
+
+# 2001 only
+gdf_vcf_uttarakhand_nainital_2001 = gdf_vcf_uttarakhand_nainital[gdf_vcf_uttarakhand_nainital["year"] == 2001]
+```
+
+```{python}
+# plotting 2001 only
+plot_2001_uttarakhand_nainital = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_vcf_uttarakhand_nainital_2001.plot(
+    column = "vcf_mean",  # Column to base colors on
+    cmap = "Greens",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Uttarakhand boundary
+nainital_boundaries.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 29.548599 
+longitude = 78.935303
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Forest Cover (vcf_mean) in Nainital, Uttarakhand", fontsize = 16)
+ax.axis("off")  
+plot_2001_uttarakhand_nainital
+```
+
+```{python}
+#2010 only
+gdf_vcf_uttarakhand_nainital_2010 = gdf_vcf_uttarakhand_nainital[gdf_vcf_uttarakhand_nainital["year"] == 2010]
+```
+
+```{python}
+# plotting 2010 only
+plot_2010_uttarakhand_nainital = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_vcf_uttarakhand_nainital_2010.plot(
+    column = "vcf_mean",  # Column to base colors on
+    cmap = "Greens",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Uttarakhand boundary
+nainital_boundaries.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 29.548599 
+longitude = 78.935303
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Forest Cover (vcf_mean) in Nainital, Uttarakhand", fontsize = 16)
+ax.axis("off")  
+plot_2010_uttarakhand_nainital
+```
+
+```{python}
+# 2020 only
+gdf_vcf_uttarakhand_nainital_2020 = gdf_vcf_uttarakhand_nainital[gdf_vcf_uttarakhand_nainital["year"] == 2020]
+```
+
+```{python}
+# plotting 2020 only
+plot_2020_uttarakhand_nainital = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_vcf_uttarakhand_nainital_2020.plot(
+    column = "vcf_mean",  # Column to base colors on
+    cmap = "Greens",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Nainital boundary
+nainital_boundaries.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 29.5522 
+longitude = 78.8832
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Forest Cover (vcf_mean) in Nainital, Uttarakhand", fontsize = 16)
+ax.axis("off")  # Hide axis for a clean look
+plot_2020_uttarakhand_nainital
+```
+
+
+```{python}
+# Set up a figure with subplots (1 row, 3 columns)
+fig, axes = plt.subplots(1, 3, figsize=(18, 6))  # 1 row, 3 columns
+
+# Plot each year on a different subplot and add the boundary and point to each
+
+# 2001 plot
+gdf_vcf_uttarakhand_nainital_2001.plot(
+    column='vcf_mean', cmap='Greens', legend=True, ax=axes[0]
+)
+axes[0].set_title("2001")
+
+# Overlay Uttarakhand boundary and the point for 2001
+nainital_boundaries.boundary.plot(ax=axes[0], color="black", linewidth=2)
+axes[0].scatter(longitude, latitude, color="red", marker="o", s=50, label="Jim Corbett National Park")
+axes[0].legend()  # Add a legend
+
+# 2010 plot
+gdf_vcf_uttarakhand_nainital_2010.plot(
+    column='vcf_mean', cmap='Greens', legend=True, ax=axes[1]
+)
+axes[1].set_title("2010")
+
+# Overlay Uttarakhand boundary and the point for 2010
+nainital_boundaries.boundary.plot(ax=axes[1], color="black", linewidth=2)
+axes[1].scatter(longitude, latitude, color="red", marker="o", s=50, label="Jim Corbett National Park")
+axes[1].legend()  # Add a legend
+
+# 2020 plot
+gdf_vcf_uttarakhand_nainital_2020.plot(
+    column='vcf_mean', cmap='Greens', legend=True, ax=axes[2]
+)
+axes[2].set_title("2020")
+
+# Overlay Uttarakhand boundary and the point for 2020
+nainital_boundaries.boundary.plot(ax=axes[2], color="black", linewidth=2)
+axes[2].scatter(longitude, latitude, color="red", marker="o", s=50, label="Jim Corbett National Park")
+axes[2].legend()  # Add a legend
+
+# Adjust layout for better spacing
+plt.tight_layout()
+
+# Show the combined plot
+plt.show()
+```
+
+As we can see, the forest cover also seems to have increased in the particular district of Jim Corbett. 
+
+We can repeat this exercise for the Pench National Park. 
+Pench National Park is located in the Maharashtra state in India. 
+
+**FOR THE PURPOSES OF PENCH NATIONAL PARK**
+```{python}
+# Subsetting only Madhya Pradesh for the purposes of the Pench National Park
+
+mp_id = location_shrid[location_shrid["state_name"] == "madhya pradesh"]
+```
+
+As we can see that Uttarakhan starts with 11-23.
+So, we can substitute this from the forest cover data as well. 
+
+```{python}
+forest_cover_mp = vcf_india[vcf_india["shrid2"].str.startswith("11-23")]
+```
+
+We can add the location in each row from the shrid id. 
+
+```{python}
+# Merging on the basis of the shrid2 id
+vcf_mp = pd.merge(forest_cover_mp, mp_id, on = "shrid2")
+```
+
+Now we can add the spatial characteristics of each entry
+
+```{python}
+# Merging on the basis of shrid2 id again
+vcf_mp = pd.merge(vcf_mp, coordinates_shrid, on = "shrid2")
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+vcf_mp["geometry"] = vcf_mp.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_vcf_mp = gpd.GeoDataFrame(vcf_mp, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+india_state_shapefile = gpd.read_file("/Users/kishikamahajan/Desktop/python2_final_project/india_shapefiles/India_State_Boundary.shp")
+
+# getting only Uttarakhand
+mp_boundary = india_state_shapefile[india_state_shapefile["State_Name"] == "Madhya Pradesh"]
+
+mp_boundary = gpd.GeoDataFrame(mp_boundary, geometry='geometry')
+
+mp_boundary = mp_boundary.to_crs(gdf_vcf_mp.crs)
+```
+
+```{python}
+import matplotlib.pyplot as plt
+
+# 2001 only
+gdf_vcf_mp_2001 = gdf_vcf_mp[gdf_vcf_mp["year"] == 2001]
+```
+
+```{python}
+# plotting 2001 only
+plot_2001_mp = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_vcf_mp_2001.plot(
+    column = "vcf_mean",  # Column to base colors on
+    cmap = "Greens",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Uttarakhand boundary
+mp_boundary.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 22.016617
+longitude = 79.829674
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Forest Cover (vcf_mean) in Madhya Pradesh", fontsize = 16)
+ax.axis("off")  
+plot_2001_mp
+```
+
+```{python}
+#2010 only
+gdf_vcf_mp_2010 = gdf_vcf_mp[gdf_vcf_mp["year"] == 2010]
+```
+
+```{python}
+# plotting 2010 only
+plot_2010_mp = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_vcf_mp_2010.plot(
+    column = "vcf_mean",  # Column to base colors on
+    cmap = "Greens",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Uttarakhand boundary
+mp_boundary.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 22.016617
+longitude = 79.829674
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Forest Cover (vcf_mean) in Madhya Pradesh", fontsize = 16)
+ax.axis("off")  # Hide axis for a clean look
+plot_2010_mp
+```
+
+```{python}
+# 2020 only
+gdf_vcf_mp_2020 = gdf_vcf_mp[gdf_vcf_mp["year"] == 2020]
+```
+
+```{python}
+# plotting 2020 only
+plot_2020_mp = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_vcf_mp_2020.plot(
+    column = "vcf_mean",  # Column to base colors on
+    cmap = "Greens",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Uttarakhand boundary
+mp_boundary.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 22.016617
+longitude = 79.829674
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Forest Cover (vcf_mean) in Madhya Pradesh", fontsize = 16)
+ax.axis("off")  # Hide axis for a clean look
+plot_2020_mp
+```
+
+
+```{python}
+# Set up a figure with subplots (1 row, 3 columns)
+fig, axes = plt.subplots(1, 3, figsize=(18, 6))  # 1 row, 3 columns
+
+# Plot each year on a different subplot and add the boundary and point to each
+
+# 2001 plot
+gdf_vcf_mp_2001.plot(
+    column='vcf_mean', cmap='Greens', legend=True, ax=axes[0]
+)
+axes[0].set_title("2001")
+
+# Overlay Uttarakhand boundary and the point for 2001
+mp_boundary.boundary.plot(ax=axes[0], color="black", linewidth=2)
+axes[0].scatter(longitude, latitude, color="red", marker="o", s=50, label="Pench National Park")
+axes[0].legend()  # Add a legend
+
+# 2010 plot
+gdf_vcf_mp_2010.plot(
+    column='vcf_mean', cmap='Greens', legend=True, ax=axes[1]
+)
+axes[1].set_title("2010")
+
+# Overlay Uttarakhand boundary and the point for 2010
+mp_boundary.boundary.plot(ax=axes[1], color="black", linewidth=2)
+axes[1].scatter(longitude, latitude, color="red", marker="o", s=50, label="Pench National Park")
+axes[1].legend()  # Add a legend
+
+# 2020 plot
+gdf_vcf_mp_2020.plot(
+    column='vcf_mean', cmap='Greens', legend=True, ax=axes[2]
+)
+axes[2].set_title("2020")
+
+# Overlay Uttarakhand boundary and the point for 2020
+mp_boundary.boundary.plot(ax=axes[2], color="black", linewidth=2)
+axes[2].scatter(longitude, latitude, color="red", marker="o", s=50, label="Pench National Park")
+axes[2].legend()  # Add a legend
+
+# Adjust layout for better spacing
+plt.tight_layout()
+
+# Show the combined plot
+plt.show()
+```
+
+As it can be seen, once again, the forest cover seems to have increased overtime even in the state pf Madhya Pradesh. 
+
+We can also try to look at the particular districts in which Pench is located. 
+
+Pench is located in Seoni and Chhindwara district of Madhya Pradesh. 
+
+As a last check, we can try to see the forest cover in these districts. 
+
+```{python}
+value_to_check = 'seoni'
+
+# Using `in` operator
+if value_to_check in mp_id['district_name'].values:
+    print(f"{value_to_check} is present in the 'disrict_name' column.")
+```
+
+```{python}
+value_to_check = 'chhindwara'
+
+# Using `in` operator
+if value_to_check in mp_id['district_name'].values:
+    print(f"{value_to_check} is present in the 'disrict_name' column.")
+```
+
+```{python}
+seoni_chhindwara_id = mp_id[(mp_id["district_name"] == "seoni") | (mp_id["district_name"] == "chhindwara")]
+```
+
+As we can see that these districts start with 11-23-455 and 11-23-456.
+So, we can substitute this from the forest cover data as well. 
+
+```{python}
+forest_cover_mp_seoni_chhindwara = vcf_india[
+    (vcf_india["shrid2"].str.startswith("11-23-455")) | 
+    (vcf_india["shrid2"].str.startswith("11-23-456"))
+]
+```
+
+We can add the location in each row from the shrid id. 
+
+```{python}
+# Merging on the basis of the shrid2 id
+vcf_mp_seoni_chhindwara = pd.merge(forest_cover_mp_seoni_chhindwara, seoni_chhindwara_id, on = "shrid2")
+```
+
+Now we can add the spatial characteristics of each entry
+
+```{python}
+# Merging on the basis of shrid2 id again
+vcf_mp_seoni_chhindwara = pd.merge(vcf_mp_seoni_chhindwara, coordinates_shrid, on = "shrid2")
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+vcf_mp_seoni_chhindwara["geometry"] = vcf_mp_seoni_chhindwara.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_vcf_mp_seoni_chhindwara = gpd.GeoDataFrame(vcf_mp_seoni_chhindwara, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+district_boundaries = gpd.read_file("/Users/kishikamahajan/Desktop/python2_final_project/india_shapefiles/shrug-pc11dist-poly-shp/district.shp")
+
+# getting only nainital district
+seoni_chhindwara_boundaries = district_boundaries[
+    (district_boundaries["pc11_d_id"] == "455") | 
+    (district_boundaries["pc11_d_id"] == "456")]
+seoni_chhindwara_boundaries = gpd.GeoDataFrame(seoni_chhindwara_boundaries, geometry='geometry')
+seoni_chhindwara_boundaries = seoni_chhindwara_boundaries.to_crs(gdf_vcf_mp.crs)
+```
+
+```{python}
+import matplotlib.pyplot as plt
+
+# 2001 only
+gdf_vcf_mp_seoni_chhindwara_2001 = gdf_vcf_mp_seoni_chhindwara[gdf_vcf_mp_seoni_chhindwara["year"] == 2001]
+```
+
+```{python}
+# plotting 2001 only
+plot_2001_mp_seoni_chhindwara = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_vcf_mp_seoni_chhindwara_2001.plot(
+    column = "vcf_mean",  # Column to base colors on
+    cmap = "Greens",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Uttarakhand boundary
+seoni_chhindwara_boundaries.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+latitude = 22.016617
+longitude = 79.829674
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Forest Cover (vcf_mean) in Seoni and Chhindwara, Madhya Pradesh", fontsize = 16)
+ax.axis("off")  
+plot_2001_mp_seoni_chhindwara
+```
+
+```{python}
+#2010 only
+gdf_vcf_mp_seoni_chhindwara_2010 = gdf_vcf_mp_seoni_chhindwara[gdf_vcf_mp_seoni_chhindwara["year"] == 2010]
+```
+
+```{python}
+# plotting 2010 only
+plot_2010_seoni_chhindwara_mp = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_vcf_mp_seoni_chhindwara_2010.plot(
+    column = "vcf_mean",  # Column to base colors on
+    cmap = "Greens",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Uttarakhand boundary
+seoni_chhindwara_boundaries.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+latitude = 22.016617
+longitude = 79.829674
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Forest Cover (vcf_mean) in Seoni and Chhindwara, Madhya Pradesh", fontsize = 16)
+ax.axis("off")  
+plot_2010_seoni_chhindwara_mp
+```
+
+```{python}
+# 2020 only
+gdf_vcf_mp_seoni_chhindwara_2020 = gdf_vcf_mp_seoni_chhindwara[gdf_vcf_mp_seoni_chhindwara["year"] == 2020]
+```
+
+```{python}
+# plotting 2020 only
+plot_2020_mp_seoni_chhindwara = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_vcf_mp_seoni_chhindwara_2020.plot(
+    column = "vcf_mean",  # Column to base colors on
+    cmap = "Greens",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Nainital boundary
+seoni_chhindwara_boundaries.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 22.016617
+longitude = 79.829674
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Forest Cover (vcf_mean) in Seoni and Chhindwara, Madhya Pradesh", fontsize = 16)
+ax.axis("off")  # Hide axis for a clean look
+plot_2020_mp_seoni_chhindwara
+```
+
+
+```{python}
+# Set up a figure with subplots (1 row, 3 columns)
+fig, axes = plt.subplots(1, 3, figsize=(18, 6))  # 1 row, 3 columns
+
+# Plot each year on a different subplot and add the boundary and point to each
+
+# 2001 plot
+gdf_vcf_mp_seoni_chhindwara_2001.plot(
+    column='vcf_mean', cmap='Greens', legend=True, ax=axes[0]
+)
+axes[0].set_title("2001")
+
+# Overlay Uttarakhand boundary and the point for 2001
+seoni_chhindwara_boundaries.boundary.plot(ax=axes[0], color="black", linewidth=2)
+axes[0].scatter(longitude, latitude, color="red", marker="o", s=50, label="Pench National Park")
+axes[0].legend()  # Add a legend
+
+# 2010 plot
+gdf_vcf_mp_seoni_chhindwara_2010.plot(
+    column='vcf_mean', cmap='Greens', legend=True, ax=axes[1]
+)
+axes[1].set_title("2010")
+
+# Overlay Uttarakhand boundary and the point for 2010
+seoni_chhindwara_boundaries.boundary.plot(ax=axes[1], color="black", linewidth=2)
+axes[1].scatter(longitude, latitude, color="red", marker="o", s=50, label="Pench National Park")
+axes[1].legend()  # Add a legend
+
+# 2020 plot
+gdf_vcf_mp_seoni_chhindwara_2020.plot(
+    column='vcf_mean', cmap='Greens', legend=True, ax=axes[2]
+)
+axes[2].set_title("2020")
+
+# Overlay Uttarakhand boundary and the point for 2020
+seoni_chhindwara_boundaries.boundary.plot(ax=axes[2], color="black", linewidth=2)
+axes[2].scatter(longitude, latitude, color="red", marker="o", s=50, label="Pench National Park")
+axes[2].legend()  # Add a legend
+
+# Adjust layout for better spacing
+plt.tight_layout()
+
+# Show the combined plot
+plt.show()
+```
+
+Hence, it is fair to assume that forest cover depletion is not the best metric to understand the impacts of commercialisation of National Parks in India. 
