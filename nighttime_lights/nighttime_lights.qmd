@@ -1,0 +1,1388 @@
+---
+title: "Untitled"
+format: html
+---
+
+
+```{python}
+import pandas as pd
+import altair as alt
+import geopandas as gpd
+import matplotlib.pyplot as plt
+```
+
+Working with 2000 alone. 
+
+```{python}
+# reading the nighttime lights data for India
+
+nighttime_lights_india_1992_2013 = pd.read_csv("/Users/kishikamahajan/Desktop/python2_final_project/nighttime_lights/dmsp_shrid.csv")
+nighttime_lights_india_2001 = nighttime_lights_india_1992_2013[nighttime_lights_india_1992_2013["year"] == 2001]
+```
+
+```{python}
+# Loading the shrid location dictionary
+location_shrid = pd.read_csv("/Users/kishikamahajan/Desktop/python2_final_project/shrug-shrid-keys-csv/shrid_loc_names.csv")
+location_shrid.head()
+```
+
+```{python}
+# Merging on the basis of the shrid2 id
+nighttime_lights_india_2001 = pd.merge(nighttime_lights_india_2001, location_shrid, on = "shrid2")
+```
+
+Now we can add the spatial characteristics of each entry
+
+```{python}
+# Loading the coordinates' file
+coordinates_shrid = pd.read_csv("/Users/kishikamahajan/Desktop/python2_final_project/shrug-shrid-keys-csv/shrid2_spatial_stats.csv")
+coordinates_shrid.head()
+```
+
+```{python}
+# Merging on the basis of shrid2 id again
+nighttime_lights_india_2001 = pd.merge(nighttime_lights_india_2001, coordinates_shrid, on = "shrid2")
+nighttime_lights_india_2001.head()
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+nighttime_lights_india_2001["geometry"] = nighttime_lights_india_2001.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_nighttime_lights_india_2001 = gpd.GeoDataFrame(nighttime_lights_india_2001, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+# plotting 2001 only
+plot_2001_nightlights = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_nighttime_lights_india_2001.plot(
+    column = "dmsp_mean_light",  # Column to base colors on
+    cmap = "magma",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Nighttime Lights by Region", fontsize = 16)
+ax.axis("off")  # Hide axis for a clean look
+plot_2001_nightlights
+```
+
+Doing this for 2010
+
+```{python}
+nighttime_lights_india_2010 = nighttime_lights_india_1992_2013[nighttime_lights_india_1992_2013["year"] == 2010]
+```
+
+```{python}
+# Merging on the basis of the shrid2 id
+nighttime_lights_india_2010 = pd.merge(nighttime_lights_india_2010, location_shrid, on = "shrid2")
+```
+
+```{python}
+# Merging on the basis of shrid2 id again
+nighttime_lights_india_2010 = pd.merge(nighttime_lights_india_2010, coordinates_shrid, on = "shrid2")
+nighttime_lights_india_2010.head()
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+nighttime_lights_india_2010["geometry"] = nighttime_lights_india_2010.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_nighttime_lights_india_2010 = gpd.GeoDataFrame(nighttime_lights_india_2010, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+# plotting 2001 only
+plot_2010_nightlights = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_nighttime_lights_india_2010.plot(
+    column = "dmsp_mean_light",  # Column to base colors on
+    cmap = "magma",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Nighttime Lights by Region", fontsize = 16)
+ax.axis("off")  # Hide axis for a clean look
+plot_2010_nightlights
+```
+
+Doing this for 2020
+
+```{python}
+nighttime_lights_india_2012_2022 = pd.read_csv("//Users/kishikamahajan/Desktop/python2_final_project/nighttime_lights/viirs_annual_shrid.csv")
+```
+
+```{python}
+nighttime_lights_india_2019 = nighttime_lights_india_2012_2022[nighttime_lights_india_2012_2022["year"] == 2019]
+```
+
+```{python}
+# Merging on the basis of the shrid2 id
+nighttime_lights_india_2019 = pd.merge(nighttime_lights_india_2019, location_shrid, on = "shrid2")
+```
+
+```{python}
+# Merging on the basis of shrid2 id again
+nighttime_lights_india_2019 = pd.merge(nighttime_lights_india_2019, coordinates_shrid, on = "shrid2")
+nighttime_lights_india_2019.head()
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+nighttime_lights_india_2019["geometry"] = nighttime_lights_india_2019.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_nighttime_lights_india_2019 = gpd.GeoDataFrame(nighttime_lights_india_2019, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+# Adjust the plot with normalization
+from matplotlib.colors import LogNorm
+
+fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_nighttime_lights_india_2020.plot(
+    column="viirs_annual_mean",
+    cmap="magma",
+    legend=True,
+    ax=ax,
+    norm=LogNorm(vmin=0.1, vmax=287)  # Use log normalization
+)
+```
+
+Putting all three together
+
+```{python}
+# Set up a figure with subplots
+fig, axes = plt.subplots(1, 3, figsize=(18, 6))  # 1 row, 3 columns
+
+# Plot 2001
+gdf_nighttime_lights_india_2001.plot(
+    column='dmsp_mean_light', 
+    cmap='magma', 
+    legend=True, 
+    ax=axes[0]
+)
+axes[0].set_title("2001")
+axes[0].axis('off')
+
+# Plot 2010
+gdf_nighttime_lights_india_2010.plot(
+    column='dmsp_mean_light', 
+    cmap='magma', 
+    legend=True, 
+    ax=axes[1]
+)
+axes[1].set_title("2010")
+axes[1].axis('off')
+
+# Plot 2019 with LogNorm
+gdf_nighttime_lights_india_2020.plot(
+    column='viirs_annual_mean', 
+    cmap='magma', 
+    legend=True, 
+    ax=axes[2],
+    norm=LogNorm(vmin=0.1, vmax=287)  
+)
+axes[2].set_title("2020")
+axes[2].axis('off')
+
+plt.tight_layout()
+plt.show()
+```
+
+
+**WORKING SOLELY ON THE BASIS OF PARTICULAR NATIONAL PARKS**
+
+**FOR THE PURPOSES OF JIM CORBETT NATIONAL PARK**
+
+```{python}
+# Subsetting only Uttarakhand for the purposes of the Jim Corbett National Park
+
+uttarakhand_id = location_shrid[location_shrid["state_name"] == "uttarakhand"]
+```
+
+As we can see that Uttarakhan starts with 11-05.
+So, we can substitute this from the forest cover data as well. 
+
+```{python}
+nightlights_uk_2001 = nighttime_lights_india_2001[nighttime_lights_india_2001["shrid2"].str.startswith("11-05")]
+```
+
+We can add the location in each row from the shrid id. 
+
+```{python}
+# Merging on the basis of the shrid2 id
+nightlights_uk_2001 = pd.merge(nightlights_uk_2001, uttarakhand_id, on = "shrid2")
+```
+
+Now we can add the spatial characteristics of each entry
+
+```{python}
+# Merging on the basis of shrid2 id again
+nightlights_uk_2001 = pd.merge(nightlights_uk_2001, coordinates_shrid, on = "shrid2")
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+nightlights_uk_2001["geometry"] = nightlights_uk_2001.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_nightlights_uk_2001 = gpd.GeoDataFrame(nightlights_uk_2001, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+india_state_shapefile = gpd.read_file("/Users/kishikamahajan/Desktop/python2_final_project/india_shapefiles/India_State_Boundary.shp")
+
+# getting only Uttarakhand
+uttarakhand_boundary = india_state_shapefile[india_state_shapefile["State_Name"] == "Uttarakhand"]
+
+uttarakhand_boundary = gpd.GeoDataFrame(uttarakhand_boundary, geometry='geometry')
+
+uttarakhand_boundary = uttarakhand_boundary.to_crs(gdf_nightlights_uk_2001.crs)
+```
+
+```{python}
+# plotting 2001 only
+plot_2001_uk_nightlights = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_nightlights_uk_2001.plot(
+    column = "dmsp_mean_light",  # Column to base colors on
+    cmap = "magma",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Uttarakhand boundary
+uttarakhand_boundary.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 29.548599
+longitude = 78.935303
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Nightlights (vcf_mean) in Uttarakhand", fontsize = 16)
+ax.axis("off")  
+plot_2001_uk_nightlights
+```
+
+Repeating the process for 2010
+
+```{python}
+nightlights_uk_2010 = nighttime_lights_india_2010[nighttime_lights_india_2010["shrid2"].str.startswith("11-05")]
+```
+
+We can add the location in each row from the shrid id. 
+
+```{python}
+# Merging on the basis of the shrid2 id
+nightlights_uk_2010 = pd.merge(nightlights_uk_2010, uttarakhand_id, on = "shrid2")
+```
+
+Now we can add the spatial characteristics of each entry
+
+```{python}
+# Merging on the basis of shrid2 id again
+nightlights_uk_2010 = pd.merge(nightlights_uk_2010, coordinates_shrid, on = "shrid2")
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+nightlights_uk_2010["geometry"] = nightlights_uk_2010.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_nightlights_uk_2010 = gpd.GeoDataFrame(nightlights_uk_2010, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+# plotting 2001 only
+plot_2010_uk_nightlights = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_nightlights_uk_2010.plot(
+    column = "dmsp_mean_light",  # Column to base colors on
+    cmap = "magma",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Uttarakhand boundary
+uttarakhand_boundary.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 29.548599
+longitude = 78.935303
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Nightlights (vcf_mean) in Uttarakhand", fontsize = 16)
+ax.axis("off")  
+plot_2010_uk_nightlights
+```
+
+Doing the same for 2020
+
+```{python}
+nightlights_uk_2020 = nighttime_lights_india_2020[nighttime_lights_india_2020["shrid2"].str.startswith("11-05")]
+```
+
+We can add the location in each row from the shrid id. 
+
+```{python}
+# Merging on the basis of the shrid2 id
+nightlights_uk_2020 = pd.merge(nightlights_uk_2020, uttarakhand_id, on = "shrid2")
+```
+
+Now we can add the spatial characteristics of each entry
+
+```{python}
+# Merging on the basis of shrid2 id again
+nightlights_uk_2020 = pd.merge(nightlights_uk_2020, coordinates_shrid, on = "shrid2")
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+nightlights_uk_2020["geometry"] = nightlights_uk_2020.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_nightlights_uk_2020 = gpd.GeoDataFrame(nightlights_uk_2020, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+# plotting 2001 only
+plot_2020_uk_nightlights = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_nightlights_uk_2020.plot(
+    column="viirs_annual_mean",
+    cmap="magma",
+    legend=True,
+    ax=ax,
+    norm=LogNorm(vmin=0.1, vmax=287)  # Use log normalization
+)
+
+# Overlay Uttarakhand boundary
+uttarakhand_boundary.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 29.548599
+longitude = 78.935303
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Nightlights (vcf_mean) in Uttarakhand", fontsize = 16)
+ax.axis("off")  
+plot_2020_uk_nightlights
+```
+
+Combining all three
+
+```{python}
+# Set up a figure with subplots
+fig, axes = plt.subplots(1, 3, figsize=(18, 6))  # 1 row, 3 columns
+
+# Plot 2001
+gdf_nightlights_uk_2001.plot(
+    column='dmsp_mean_light', 
+    cmap='magma', 
+    legend=True, 
+    ax=axes[0]
+)
+axes[0].set_title("2001")
+axes[0].axis('off')
+
+uttarakhand_boundary.boundary.plot(ax=axes[0], color="black", linewidth=2)
+axes[0].scatter(longitude, latitude, color="red", marker="o", s=50, label="Jim Corbett National Park")
+axes[0].legend()  # Add a legend
+
+# Plot 2010
+gdf_nightlights_uk_2010.plot(
+    column='dmsp_mean_light', 
+    cmap='magma', 
+    legend=True, 
+    ax=axes[1]
+)
+axes[1].set_title("2010")
+axes[1].axis('off')
+
+# Overlay Uttarakhand boundary and the point for 2010
+uttarakhand_boundary.boundary.plot(ax=axes[1], color="black", linewidth=2)
+axes[1].scatter(longitude, latitude, color="red", marker="o", s=50, label="Jim Corbett National Park")
+axes[1].legend()  # Add a legend
+
+# Plot 2019 with LogNorm
+gdf_nightlights_uk_2020.plot(
+    column='viirs_annual_mean', 
+    cmap='magma', 
+    legend=True, 
+    ax=axes[2],
+    norm=LogNorm(vmin=0.1, vmax=287)  
+)
+axes[2].set_title("2020")
+axes[2].axis('off')
+
+# Overlay Uttarakhand boundary and the point for 2020
+uttarakhand_boundary.boundary.plot(ax=axes[2], color="black", linewidth=2)
+axes[2].scatter(longitude, latitude, color="red", marker="o", s=50, label="Jim Corbett National Park")
+axes[2].legend()  # Add a legend
+
+plt.tight_layout()
+plt.show()
+```
+
+We can also look at just Nainital to get a clearer analysis
+
+```{python}
+nainital_id = uttarakhand_id[uttarakhand_id["district_name"] == "nainital"]
+```
+
+As we can see that Nainital starts with 11-05-066.
+So, we can substitute this from the forest cover data as well. 
+
+```{python}
+nightlights_uttarakhand_nainital_2001 = nighttime_lights_india_2001[nighttime_lights_india_2001["shrid2"].str.startswith("11-05-066")]
+```
+
+We can add the location in each row from the shrid id. 
+
+```{python}
+# Merging on the basis of the shrid2 id
+nightlights_uttarakhand_nainital_2001 = pd.merge(nightlights_uttarakhand_nainital_2001, nainital_id, on = "shrid2")
+```
+
+Now we can add the spatial characteristics of each entry
+
+```{python}
+# Merging on the basis of shrid2 id again
+nightlights_uttarakhand_nainital_2001 = pd.merge(nightlights_uttarakhand_nainital_2001, coordinates_shrid, on = "shrid2")
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+nightlights_uttarakhand_nainital_2001["geometry"] = nightlights_uttarakhand_nainital_2001.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_nightlights_uttarakhand_nainital_2001 = gpd.GeoDataFrame(nightlights_uttarakhand_nainital_2001, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+district_boundaries = gpd.read_file("/Users/kishikamahajan/Desktop/python2_final_project/india_shapefiles/shrug-pc11dist-poly-shp/district.shp")
+
+# getting only nainital district
+nainital_boundaries = district_boundaries[district_boundaries["pc11_d_id"] == "066"]
+nainital_boundaries = gpd.GeoDataFrame(nainital_boundaries, geometry='geometry')
+nainital_boundaries = nainital_boundaries.to_crs(gdf_nightlights_uttarakhand_nainital_2001.crs)
+```
+
+
+```{python}
+# plotting 2001 only
+plot_2001_uk_nainital_nightlights = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_nightlights_uttarakhand_nainital_2001.plot(
+    column = "dmsp_mean_light",  # Column to base colors on
+    cmap = "magma",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Uttarakhand boundary
+nainital_boundaries.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 29.548599
+longitude = 78.935303
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Nightlights in Nainital, Utarakhand", fontsize = 16)
+ax.axis("off")  
+plot_2001_uk_nainital_nightlights
+```
+
+Doing the same thing for 2010
+
+```{python}
+nightlights_uttarakhand_nainital_2010 = nighttime_lights_india_2010[nighttime_lights_india_2010["shrid2"].str.startswith("11-05-066")]
+```
+
+We can add the location in each row from the shrid id. 
+
+```{python}
+# Merging on the basis of the shrid2 id
+nightlights_uttarakhand_nainital_2010 = pd.merge(nightlights_uttarakhand_nainital_2010, nainital_id, on = "shrid2")
+```
+
+Now we can add the spatial characteristics of each entry
+
+```{python}
+# Merging on the basis of shrid2 id again
+nightlights_uttarakhand_nainital_2010 = pd.merge(nightlights_uttarakhand_nainital_2010, coordinates_shrid, on = "shrid2")
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+nightlights_uttarakhand_nainital_2010["geometry"] = nightlights_uttarakhand_nainital_2010.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_nightlights_uttarakhand_nainital_2010 = gpd.GeoDataFrame(nightlights_uttarakhand_nainital_2010, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+# plotting 2001 only
+plot_2010_uk_nainital_nightlights = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_nightlights_uttarakhand_nainital_2010.plot(
+    column = "dmsp_mean_light",  # Column to base colors on
+    cmap = "magma",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Uttarakhand boundary
+nainital_boundaries.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 29.548599
+longitude = 78.935303
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Nightlights in Nainital, Utarakhand", fontsize = 16)
+ax.axis("off")  
+plot_2010_uk_nainital_nightlights
+```
+
+Doing the same for 2020
+
+```{python}
+nightlights_uttarakhand_nainital_2020 = nighttime_lights_india_2020[nighttime_lights_india_2020["shrid2"].str.startswith("11-05-066")]
+```
+
+We can add the location in each row from the shrid id. 
+
+```{python}
+# Merging on the basis of the shrid2 id
+nightlights_uttarakhand_nainital_2020 = pd.merge(nightlights_uttarakhand_nainital_2020, nainital_id, on = "shrid2")
+```
+
+Now we can add the spatial characteristics of each entry
+
+```{python}
+# Merging on the basis of shrid2 id again
+nightlights_uttarakhand_nainital_2020 = pd.merge(nightlights_uttarakhand_nainital_2020, coordinates_shrid, on = "shrid2")
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+nightlights_uttarakhand_nainital_2020["geometry"] = nightlights_uttarakhand_nainital_2020.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_nightlights_uttarakhand_nainital_2020 = gpd.GeoDataFrame(nightlights_uttarakhand_nainital_2020, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+# plotting 2001 only
+plot_2020_uk_nainital_nightlights = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_nightlights_uttarakhand_nainital_2020.plot(
+    column="viirs_annual_mean",
+    cmap="magma",
+    legend=True,
+    ax=ax,
+    norm=LogNorm(vmin=0.1, vmax=287)  # Use log normalization
+)
+
+
+# Overlay Uttarakhand boundary
+nainital_boundaries.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 29.548599
+longitude = 78.935303
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Nightlights in Nainital, Utarakhand", fontsize = 16)
+ax.axis("off")  
+plot_2020_uk_nainital_nightlights
+```
+
+Puting all 3 together
+
+```{python}
+# Set up a figure with subplots
+fig, axes = plt.subplots(1, 3, figsize=(18, 6))  # 1 row, 3 columns
+
+# Plot 2001
+gdf_nightlights_uttarakhand_nainital_2001.plot(
+    column='dmsp_mean_light', 
+    cmap='magma', 
+    legend=True, 
+    ax=axes[0]
+)
+axes[0].set_title("2001")
+axes[0].axis('off')
+
+nainital_boundaries.boundary.plot(ax=axes[0], color="black", linewidth=2)
+axes[0].scatter(longitude, latitude, color="red", marker="o", s=50, label="Jim Corbett National Park")
+axes[0].legend()  # Add a legend
+
+# Plot 2010
+gdf_nightlights_uttarakhand_nainital_2010.plot(
+    column='dmsp_mean_light', 
+    cmap='magma', 
+    legend=True, 
+    ax=axes[1]
+)
+axes[1].set_title("2010")
+axes[1].axis('off')
+
+# Overlay Uttarakhand boundary and the point for 2010
+nainital_boundaries.boundary.plot(ax=axes[1], color="black", linewidth=2)
+axes[1].scatter(longitude, latitude, color="red", marker="o", s=50, label="Jim Corbett National Park")
+axes[1].legend()  # Add a legend
+
+# Plot 2019 with LogNorm
+gdf_nightlights_uttarakhand_nainital_2020.plot(
+    column='viirs_annual_mean', 
+    cmap='magma', 
+    legend=True, 
+    ax=axes[2],
+    norm=LogNorm(vmin=0.1, vmax=287)  
+)
+axes[2].set_title("2020")
+axes[2].axis('off')
+
+# Overlay Uttarakhand boundary and the point for 2020
+nainital_boundaries.boundary.plot(ax=axes[2], color="black", linewidth=2)
+axes[2].scatter(longitude, latitude, color="red", marker="o", s=50, label="Jim Corbett National Park")
+axes[2].legend()  # Add a legend
+
+plt.tight_layout()
+plt.show()
+```
+
+**FOR THE PURPOSES OF PENCH NATIONAL PARK**
+
+```{python}
+# Subsetting only Madhya Pradesh for the purposes of the Pench National Park
+
+mp_id = location_shrid[location_shrid["state_name"] == "madhya pradesh"]
+```
+
+As we can see that Madhya Pradesh starts with 11-23.
+So, we can substitute this from the forest cover data as well. 
+
+```{python}
+nightlights_mp_2001 = nighttime_lights_india_2001[nighttime_lights_india_2001["shrid2"].str.startswith("11-23")]
+```
+
+We can add the location in each row from the shrid id. 
+
+```{python}
+# Merging on the basis of the shrid2 id
+nightlights_mp_2001 = pd.merge(nightlights_mp_2001, mp_id, on = "shrid2")
+```
+
+Now we can add the spatial characteristics of each entry
+
+```{python}
+# Merging on the basis of shrid2 id again
+nightlights_mp_2001 = pd.merge(nightlights_mp_2001, coordinates_shrid, on = "shrid2")
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+nightlights_mp_2001["geometry"] = nightlights_mp_2001.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_nightlights_mp_2001 = gpd.GeoDataFrame(nightlights_mp_2001, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+india_state_shapefile = gpd.read_file("/Users/kishikamahajan/Desktop/python2_final_project/india_shapefiles/India_State_Boundary.shp")
+
+# getting only Uttarakhand
+mp_boundary = india_state_shapefile[india_state_shapefile["State_Name"] == "Madhya Pradesh"]
+
+mp_boundary = gpd.GeoDataFrame(mp_boundary, geometry='geometry')
+
+mp_boundary = mp_boundary.to_crs(gdf_nightlights_mp_2001.crs)
+```
+
+```{python}
+# plotting 2001 only
+plot_2001_mp = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_nightlights_mp_2001.plot(
+    column = "dmsp_mean_light",  # Column to base colors on
+    cmap = "magma",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Uttarakhand boundary
+mp_boundary.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 22.016617
+longitude = 79.829674
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Forest Cover (vcf_mean) in Madhya Pradesh", fontsize = 16)
+ax.axis("off")  
+plot_2001_mp
+```
+
+Repeating the process for 2010
+
+```{python}
+nightlights_mp_2010 = nighttime_lights_india_2010[nighttime_lights_india_2010["shrid2"].str.startswith("11-23")]
+```
+
+We can add the location in each row from the shrid id. 
+
+```{python}
+# Merging on the basis of the shrid2 id
+nightlights_mp_2010 = pd.merge(nightlights_mp_2010, mp_id, on = "shrid2")
+```
+
+Now we can add the spatial characteristics of each entry
+
+```{python}
+# Merging on the basis of shrid2 id again
+nightlights_mp_2010 = pd.merge(nightlights_mp_2010, coordinates_shrid, on = "shrid2")
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+nightlights_mp_2010["geometry"] = nightlights_mp_2010.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_nightlights_mp_2010 = gpd.GeoDataFrame(nightlights_mp_2010, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+india_state_shapefile = gpd.read_file("/Users/kishikamahajan/Desktop/python2_final_project/india_shapefiles/India_State_Boundary.shp")
+
+# getting only Uttarakhand
+mp_boundary = india_state_shapefile[india_state_shapefile["State_Name"] == "Madhya Pradesh"]
+
+mp_boundary = gpd.GeoDataFrame(mp_boundary, geometry='geometry')
+
+mp_boundary = mp_boundary.to_crs(gdf_nightlights_mp_2001.crs)
+```
+
+```{python}
+# plotting 2001 only
+plot_2010_mp = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_nightlights_mp_2010.plot(
+    column = "dmsp_mean_light",  # Column to base colors on
+    cmap = "magma",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Uttarakhand boundary
+mp_boundary.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 22.016617
+longitude = 79.829674
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Nighttime Lights (vcf_mean) in Madhya Pradesh", fontsize = 16)
+ax.axis("off")  
+plot_2010_mp
+```
+
+Repeating the process for 2020
+
+```{python}
+nightlights_mp_2020 = nighttime_lights_india_2020[nighttime_lights_india_2020["shrid2"].str.startswith("11-23")]
+```
+
+We can add the location in each row from the shrid id. 
+
+```{python}
+# Merging on the basis of the shrid2 id
+nightlights_mp_2020 = pd.merge(nightlights_mp_2020, mp_id, on = "shrid2")
+```
+
+Now we can add the spatial characteristics of each entry
+
+```{python}
+# Merging on the basis of shrid2 id again
+nightlights_mp_2020 = pd.merge(nightlights_mp_2020, coordinates_shrid, on = "shrid2")
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+nightlights_mp_2020["geometry"] = nightlights_mp_2020.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_nightlights_mp_2020 = gpd.GeoDataFrame(nightlights_mp_2020, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+india_state_shapefile = gpd.read_file("/Users/kishikamahajan/Desktop/python2_final_project/india_shapefiles/India_State_Boundary.shp")
+
+# getting only Uttarakhand
+mp_boundary = india_state_shapefile[india_state_shapefile["State_Name"] == "Madhya Pradesh"]
+
+mp_boundary = gpd.GeoDataFrame(mp_boundary, geometry='geometry')
+
+mp_boundary = mp_boundary.to_crs(gdf_nightlights_mp_2020.crs)
+```
+
+```{python}
+# plotting 2001 only
+plot_2020_mp = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_nightlights_mp_2020.plot(
+    column="viirs_annual_mean",
+    cmap="magma",
+    legend=True,
+    ax=ax,
+    norm=LogNorm(vmin=0.1, vmax=287)  # Use log normalization
+)
+
+
+# Overlay Uttarakhand boundary
+mp_boundary.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 22.016617
+longitude = 79.829674
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Nighttime Lights in Madhya Pradesh", fontsize = 16)
+ax.axis("off")  
+plot_2020_mp
+```
+
+Combining all the three maps
+
+```{python}
+# Set up a figure with subplots
+fig, axes = plt.subplots(1, 3, figsize=(18, 6))  # 1 row, 3 columns
+
+# Plot 2001
+gdf_nightlights_mp_2001.plot(
+    column='dmsp_mean_light', 
+    cmap='magma', 
+    legend=True, 
+    ax=axes[0]
+)
+axes[0].set_title("2001")
+axes[0].axis('off')
+
+mp_boundary.boundary.plot(ax=axes[0], color="black", linewidth=2)
+axes[0].scatter(longitude, latitude, color="red", marker="o", s=50, label="Pench National Park")
+axes[0].legend()  # Add a legend
+
+# Plot 2010
+gdf_nightlights_mp_2010.plot(
+    column='dmsp_mean_light', 
+    cmap='magma', 
+    legend=True, 
+    ax=axes[1]
+)
+axes[1].set_title("2010")
+axes[1].axis('off')
+
+# Overlay Uttarakhand boundary and the point for 2010
+mp_boundary.boundary.plot(ax=axes[1], color="black", linewidth=2)
+axes[1].scatter(longitude, latitude, color="red", marker="o", s=50, label="Pench National Park")
+axes[1].legend()  # Add a legend
+
+# Plot 2019 with LogNorm
+gdf_nightlights_mp_2020.plot(
+    column='viirs_annual_mean', 
+    cmap='magma', 
+    legend=True, 
+    ax=axes[2],
+    norm=LogNorm(vmin=0.1, vmax=287)  
+)
+axes[2].set_title("2020")
+axes[2].axis('off')
+
+# Overlay Uttarakhand boundary and the point for 2020
+mp_boundary.boundary.plot(ax=axes[2], color="black", linewidth=2)
+axes[2].scatter(longitude, latitude, color="red", marker="o", s=50, label="Pench National Park")
+axes[2].legend()  # Add a legend
+
+plt.tight_layout()
+plt.show()
+```
+
+We can also look at just Seoni and Chhindwara to get a clearer analysis
+
+```{python}
+seoni_chhindwara_id = mp_id[(mp_id["district_name"] == "seoni") | (mp_id["district_name"] == "chhindwara")]
+```
+
+As we can see that these districts start with 11-23-455 and 11-23-456.
+So, we can substitute this from the nighttime data as well. 
+
+```{python}
+nightlights_mp_seoni_chhindwara_2001 = nighttime_lights_india_2001[
+    (nighttime_lights_india_2001["shrid2"].str.startswith("11-23-455")) | 
+    (nighttime_lights_india_2001["shrid2"].str.startswith("11-23-456"))
+]
+```
+
+We can add the location in each row from the shrid id. 
+
+```{python}
+# Merging on the basis of the shrid2 id
+nightlights_mp_seoni_chhindwara_2001 = pd.merge(nightlights_mp_seoni_chhindwara_2001, seoni_chhindwara_id, on = "shrid2")
+```
+
+Now we can add the spatial characteristics of each entry
+
+```{python}
+# Merging on the basis of shrid2 id again
+nightlights_mp_seoni_chhindwara_2001 = pd.merge(nightlights_mp_seoni_chhindwara_2001, coordinates_shrid, on = "shrid2")
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+nightlights_mp_seoni_chhindwara_2001["geometry"] = nightlights_mp_seoni_chhindwara_2001.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_nightlights_mp_seoni_chhindwara_2001 = gpd.GeoDataFrame(nightlights_mp_seoni_chhindwara_2001, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+district_boundaries = gpd.read_file("/Users/kishikamahajan/Desktop/python2_final_project/india_shapefiles/shrug-pc11dist-poly-shp/district.shp")
+
+# getting only nainital district
+seoni_chhindwara_boundaries = district_boundaries[
+    (district_boundaries["pc11_d_id"] == "455") | 
+    (district_boundaries["pc11_d_id"] == "456")]
+seoni_chhindwara_boundaries = gpd.GeoDataFrame(seoni_chhindwara_boundaries, geometry='geometry')
+seoni_chhindwara_boundaries = seoni_chhindwara_boundaries.to_crs(gdf_nightlights_mp_seoni_chhindwara_2001.crs)
+```
+
+```{python}
+# plotting 2001 only
+plot_2001_mp_seoni_chhindwara_nightlights = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_nightlights_mp_seoni_chhindwara_2001.plot(
+    column = "dmsp_mean_light",  # Column to base colors on
+    cmap = "magma",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Uttarakhand boundary
+seoni_chhindwara_boundaries.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 22.016617
+longitude = 79.829674
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Nightlights in Seoni and Chhindwara, Madhya Pradesh", fontsize = 16)
+ax.axis("off")  
+plot_2001_mp_seoni_chhindwara_nightlights
+```
+
+Doing the same for 2010
+
+```{python}
+nightlights_mp_seoni_chhindwara_2010 = nighttime_lights_india_2010[
+    (nighttime_lights_india_2010["shrid2"].str.startswith("11-23-455")) | 
+    (nighttime_lights_india_2010["shrid2"].str.startswith("11-23-456"))
+]
+```
+
+We can add the location in each row from the shrid id. 
+
+```{python}
+# Merging on the basis of the shrid2 id
+nightlights_mp_seoni_chhindwara_2010 = pd.merge(nightlights_mp_seoni_chhindwara_2010, seoni_chhindwara_id, on = "shrid2")
+```
+
+Now we can add the spatial characteristics of each entry
+
+```{python}
+# Merging on the basis of shrid2 id again
+nightlights_mp_seoni_chhindwara_2010 = pd.merge(nightlights_mp_seoni_chhindwara_2010, coordinates_shrid, on = "shrid2")
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+nightlights_mp_seoni_chhindwara_2010["geometry"] = nightlights_mp_seoni_chhindwara_2010.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_nightlights_mp_seoni_chhindwara_2010 = gpd.GeoDataFrame(nightlights_mp_seoni_chhindwara_2010, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+# plotting 2010 only
+plot_2010_mp_seoni_chhindwara_nightlights = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_nightlights_mp_seoni_chhindwara_2010.plot(
+    column = "dmsp_mean_light",  # Column to base colors on
+    cmap = "magma",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax
+)
+
+# Overlay Uttarakhand boundary
+seoni_chhindwara_boundaries.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 22.016617
+longitude = 79.829674
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Nightlights in Seoni and Chhindwara, Madhya Pradesh", fontsize = 16)
+ax.axis("off")  
+plot_2010_mp_seoni_chhindwara_nightlights
+```
+
+Doing the same for 2020
+
+```{python}
+nightlights_mp_seoni_chhindwara_2020 = nighttime_lights_india_2020[
+    (nighttime_lights_india_2020["shrid2"].str.startswith("11-23-455")) | 
+    (nighttime_lights_india_2020["shrid2"].str.startswith("11-23-456"))
+]
+```
+
+We can add the location in each row from the shrid id. 
+
+```{python}
+# Merging on the basis of the shrid2 id
+nightlights_mp_seoni_chhindwara_2020 = pd.merge(nightlights_mp_seoni_chhindwara_2020, seoni_chhindwara_id, on = "shrid2")
+```
+
+Now we can add the spatial characteristics of each entry
+
+```{python}
+# Merging on the basis of shrid2 id again
+nightlights_mp_seoni_chhindwara_2020 = pd.merge(nightlights_mp_seoni_chhindwara_2020, coordinates_shrid, on = "shrid2")
+```
+
+Converting this into a spatial object
+
+```{python}
+from shapely.geometry import Point
+
+# we manually add a geometry column
+nightlights_mp_seoni_chhindwara_2020["geometry"] = nightlights_mp_seoni_chhindwara_2020.apply(lambda row: Point(row["longitude"], row["latitude"]), axis=1)
+```
+
+```{python}
+# converting to geodataframe
+gdf_nightlights_mp_seoni_chhindwara_2020 = gpd.GeoDataFrame(nightlights_mp_seoni_chhindwara_2020, geometry = "geometry", crs = "EPSG:4326")
+```
+
+```{python}
+# plotting 2020 only
+plot_2020_mp_seoni_chhindwara_nightlights = fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+gdf_nightlights_mp_seoni_chhindwara_2020.plot(
+    column = "viirs_annual_mean",  # Column to base colors on
+    cmap = "magma",      # Color map for green shades
+    legend = True,        # Add a color bar legend
+    ax = ax,
+    norm=LogNorm(vmin=0.1, vmax=287)
+)
+
+# Overlay Uttarakhand boundary
+seoni_chhindwara_boundaries.boundary.plot(
+    ax=ax,              # Plot on the same axes
+    color="black",        # Boundary line color
+    linewidth=2         # Line thickness
+)
+
+# Coordinates of the point
+latitude = 22.016617
+longitude = 79.829674
+
+# Add the point to the map
+ax.scatter(
+    longitude, latitude,  # X and Y coordinates
+    color="red",          # Color of the point
+    marker="o",           # Shape of the marker
+    s=50,                # Size of the marker
+    label="Point of Interest"  # Label for the legend
+)
+
+# Add a title and remove axes for clarity
+ax.set_title("Nightlights in Seoni and Chhindwara, Madhya Pradesh", fontsize = 16)
+ax.axis("off")  
+plot_2020_mp_seoni_chhindwara_nightlights
+```
+
+Putting all 3 together
+
+```{python}
+# Set up a figure with subplots
+fig, axes = plt.subplots(1, 3, figsize=(18, 6))  # 1 row, 3 columns
+
+# Plot 2001
+gdf_nightlights_mp_seoni_chhindwara_2001.plot(
+    column='dmsp_mean_light', 
+    cmap='magma', 
+    legend=True, 
+    ax=axes[0]
+)
+axes[0].set_title("2001")
+axes[0].axis('off')
+
+seoni_chhindwara_boundaries.boundary.plot(ax=axes[0], color="black", linewidth=2)
+axes[0].scatter(longitude, latitude, color="red", marker="o", s=50, label="Pench National Park")
+axes[0].legend()  # Add a legend
+
+# Plot 2010
+gdf_nightlights_mp_seoni_chhindwara_2010.plot(
+    column='dmsp_mean_light', 
+    cmap='magma', 
+    legend=True, 
+    ax=axes[1]
+)
+axes[1].set_title("2010")
+axes[1].axis('off')
+
+# Overlay Uttarakhand boundary and the point for 2010
+seoni_chhindwara_boundaries.boundary.plot(ax=axes[1], color="black", linewidth=2)
+axes[1].scatter(longitude, latitude, color="red", marker="o", s=50, label="Pench National Park")
+axes[1].legend()  # Add a legend
+
+# Plot 2019 with LogNorm
+gdf_nightlights_mp_seoni_chhindwara_2020.plot(
+    column='viirs_annual_mean', 
+    cmap='magma', 
+    legend=True, 
+    ax=axes[2],
+    norm=LogNorm(vmin=0.1, vmax=287)  
+)
+axes[2].set_title("2020")
+axes[2].axis('off')
+
+# Overlay Uttarakhand boundary and the point for 2020
+seoni_chhindwara_boundaries.boundary.plot(ax=axes[2], color="black", linewidth=2)
+axes[2].scatter(longitude, latitude, color="red", marker="o", s=50, label="Pench National Park")
+axes[2].legend()  # Add a legend
+
+plt.tight_layout()
+plt.show()
+```
